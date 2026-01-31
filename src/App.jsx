@@ -75,7 +75,7 @@ function App() {
                 onCurrencyChange={(val) => setFrom(val)}
               />
 
-              <div className="absolute left-1/2 top-[95px] -translate-x-1/2 -translate-y-1/2 z-50">
+              <div className="absolute left-1/2 top-[95px] -translate-x-1/2 -translate-y-1/2 z-100">
                 <button
                   type="button"
                   className="bg-[#2a303c] border-4 border-[#111827] rounded-full p-2 text-gray-400 hover:text-white hover:bg-gray-700 transition-all shadow-lg"

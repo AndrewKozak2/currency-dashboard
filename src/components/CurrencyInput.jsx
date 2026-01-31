@@ -69,7 +69,7 @@ function CurrencyInput({
 
           {isOpen && (
             <ul
-              className="absolute left-0 top-full mt-2 w-40 bg-[#1f2937] border border-gray-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto py-1
+              className="absolute left-0 top-full w-39 bg-[#1f2937] border border-gray-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto py-1
                 [&::-webkit-scrollbar]:w-1.5
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:bg-gray-600

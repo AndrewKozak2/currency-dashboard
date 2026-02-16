@@ -1,16 +1,44 @@
-# React + Vite
+# Currency Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SPA для моніторингу актуальних курсів валют та двосторонньої конвертації. Проект розроблено з фокусом на продуктивність рендеру, правильну роботу з життєвим циклом компонентів та ізоляцію логіки.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Core:** React 18, Vite
+- **Routing:** React Router v6 (Nested Routing)
+- **Data Fetching:** Native Fetch API
+- **Styling:** CSS3 (Grid, Flexbox)
 
-## React Compiler
+## Архітектурні рішення (Under the Hood)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Мережевий шар та Memory Management
 
-## Expanding the ESLint configuration
+Робота з API інкапсульована у кастомний хук `useCurrencyData`. Для запобігання **Memory Leaks** (витоків пам'яті) під час Unmount-фази компонентів впроваджено `AbortController`. Якщо користувач залишає сторінку до завершення `fetch`-запиту, з'єднання примусово переривається. Це запобігає спробам React оновити state неіснуючого компонента.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. State Management (Derived State)
+
+Логіку двостороннього калькулятора реалізовано без використання `useEffect` для синхронізації полів.
+
+- **Проблема:** Синхронізація стейтів через `useEffect` (two-way binding) створює подвійні ре-рендери та ризик Infinite Loops.
+- **Рішення:** Застосовано патерн **Derived State**. Стейт зберігає лише одне джерело правди (базова сума та напрямок конвертації). Протилежне значення обчислюється "на льоту" під час Render Phase. Це мінімізує навантаження на Virtual DOM.
+
+### 3. Маршрутизація (React Router v6)
+
+- Використано **Nested Routing**. Компонент `Layout` утримує статичний UI (навігацію), тоді як динамічний контент ін'єктується через `<Outlet />`.
+- Реалізовано безпечний редірект з кореневого маршруту (`/`) на `/converter` за допомогою `<Navigate replace />`. Використання `replace` замінює поточний запис у History API, запобігаючи нескінченним циклам при використанні кнопки "Назад" у браузері.
+
+## Запуск локально
+
+1. Клонувати репозиторій:
+
+```bash
+   git clone https://github.com/AndrewKozak2/currency-dashboard.git
+
+2. Встановити залежності:
+
+    npm install
+
+3. Запустити dev-сервер:
+
+    npm run dev
+```

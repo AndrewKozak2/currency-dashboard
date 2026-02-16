@@ -29,20 +29,32 @@ function App() {
 
   const options = ALLOWED_CURRENCIES;
 
-  const convert = () => {
-    if (currencyInfo[to]) {
-      setConvertedAmount(Number((amount * currencyInfo[to]).toFixed(2)));
+  const getActualRate = () => {
+    const rawRate = currencyInfo[to];
+    if (!rawRate) return 0;
+    if (to === "uah") {
+      return rawRate * 0.98;
+    } else if (from === "uah") {
+      return rawRate / 1.02;
+    }
+    return rawRate;
+  };
+
+  const actualRate = getActualRate();
+  const currentRate = actualRate ? actualRate.toFixed(2) : "...";
+
+  const convert = (e) => {
+    e.preventDefault();
+    if (actualRate) {
+      setConvertedAmount(Number((amount * actualRate).toFixed(2)));
     }
   };
 
   const swap = () => {
     setFrom(to);
     setTo(from);
-    setConvertedAmount(amount);
-    setAmount(convertedAmount);
+    setConvertedAmount(0);
   };
-
-  const currentRate = currencyInfo[to] ? currencyInfo[to].toFixed(2) : "...";
 
   return (
     <div className="min-h-screen w-full flex justify-center items-center bg-[#101419] p-4 lg:p-10">
@@ -60,13 +72,7 @@ function App() {
               Калькулятор у тестовому режимі!
             </p>
 
-            <form
-              className="flex flex-col gap-4 relative"
-              onSubmit={(e) => {
-                e.preventDefault();
-                convert();
-              }}
-            >
+            <form className="flex flex-col gap-4 relative" onSubmit={convert}>
               <CurrencyInput
                 amount={amount}
                 currencyOptions={options}
@@ -90,7 +96,7 @@ function App() {
                 currencyOptions={options}
                 currency={to}
                 onCurrencyChange={(val) => setTo(val)}
-                onAmountChange={(val) => setConvertedAmount(val)}
+                readOnly={true}
               />
 
               <div className="flex justify-between items-center mt-2">
